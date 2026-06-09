@@ -1,0 +1,531 @@
+<!-- ══════════════════════════════════════════════
+   AGUERO BANKS — VAULT PLAYER EMBED
+   Drop this entire block directly below the hero
+   section in the rollout page HTML.
+   Requires Three.js (add once before </body>):
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+══════════════════════════════════════════════ -->
+
+<style>
+/* ═══ VAULT SHRINE STYLES ═══ */
+#vault-shrine{background:var(--void);position:relative;overflow:hidden;padding:clamp(80px,14vw,160px) 0 clamp(100px,18vw,200px);font-family:var(--font-serif);color:var(--pearl);-webkit-font-smoothing:antialiased}
+#vault-shrine::before{content:'';position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:min(900px,140vw);height:min(900px,140vw);background:radial-gradient(ellipse,rgba(196,162,74,.05) 0%,transparent 60%);pointer-events:none;animation:shrineGlow 12s ease-in-out infinite}
+@keyframes shrineGlow{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}}
+#vault-shrine::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.025;pointer-events:none;z-index:100;mix-blend-mode:overlay}
+.shrine-eyebrow{text-align:center;font-family:var(--font-sans);font-size:8.5px;letter-spacing:.55em;text-transform:uppercase;color:rgba(196,162,74,.4);margin-bottom:clamp(48px,10vw,80px);position:relative;z-index:10;padding:0 clamp(20px,5vw,40px)}
+.vault-stage{position:relative;width:min(480px,92vw);margin:0 auto;z-index:10}
+.vault-door{position:relative;width:100%;padding-bottom:100%;border-radius:50%;background:conic-gradient(from 0deg,#1a1610 0deg,#2e2410 30deg,#4a3a18 50deg,#c4a24a 80deg,#e8cc84 95deg,#c4a24a 110deg,#4a3a18 130deg,#2a2010 160deg,#1a1610 180deg,#2e2410 210deg,#4a3a18 230deg,#c4a24a 260deg,#e8cc84 275deg,#c4a24a 290deg,#4a3a18 310deg,#2a2010 340deg,#1a1610 360deg);box-shadow:0 0 0 2px rgba(196,162,74,.15),0 0 40px rgba(196,162,74,.12),0 0 120px rgba(196,162,74,.06),inset 0 0 60px rgba(0,0,0,.8)}
+.vault-door.unlocking{animation:vaultSpin 2.4s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes vaultSpin{0%{transform:rotate(0)}60%{transform:rotate(720deg)}80%{transform:rotate(680deg)}100%{transform:rotate(720deg)}}
+.vault-spoke{position:absolute;top:50%;left:50%;width:2px;height:42%;background:linear-gradient(to bottom,rgba(196,162,74,.6),rgba(196,162,74,.1));transform-origin:50% 0%;transform:translateX(-50%) translateY(-100%);border-radius:1px}
+.vault-bolt{position:absolute;width:14%;height:14%;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e8cc84,#7a6228);box-shadow:0 2px 8px rgba(0,0,0,.6),inset 0 1px 2px rgba(255,255,255,.15);top:50%;left:50%;transform-origin:center}
+.vault-inner{position:absolute;inset:8%;border-radius:50%;background:radial-gradient(ellipse at 40% 35%,#1c1810 0%,#0a0907 60%,#050504 100%);border:1px solid rgba(196,162,74,.18);overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 40px rgba(0,0,0,.9),inset 0 0 2px rgba(196,162,74,.1)}
+#vinyl-canvas{position:absolute;inset:0;width:100%!important;height:100%!important;border-radius:50%;opacity:0;transition:opacity 1.2s cubic-bezier(.16,1,.3,1)}
+#vinyl-canvas.visible{opacity:1}
+.vault-prompt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:20;transition:opacity .8s cubic-bezier(.16,1,.3,1);cursor:pointer}
+.vault-prompt.hidden{opacity:0;pointer-events:none}
+.vault-prompt-icon{width:clamp(40px,10vw,54px);height:clamp(40px,10vw,54px);border-radius:50%;border:1px solid rgba(196,162,74,.45);display:flex;align-items:center;justify-content:center;animation:promptPulse 3s ease-in-out infinite}
+@keyframes promptPulse{0%,100%{box-shadow:0 0 0 0 rgba(196,162,74,.3)}50%{box-shadow:0 0 0 12px rgba(196,162,74,0)}}
+.vault-prompt-icon svg{width:22px;height:22px;fill:none;stroke:#d4b86a;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.vault-prompt-text{font-family:var(--font-sans);font-size:8px;letter-spacing:.45em;text-transform:uppercase;color:rgba(196,162,74,.5)}
+.vault-flash{position:absolute;inset:8%;border-radius:50%;background:radial-gradient(ellipse,rgba(196,162,74,.35) 0%,transparent 70%);opacity:0;pointer-events:none;z-index:25;transition:opacity .3s}
+.vault-flash.on{animation:flashBurst 1s ease-out forwards}
+@keyframes flashBurst{0%{opacity:.9}100%{opacity:0}}
+.vault-center-ring{position:absolute;inset:12%;border-radius:50%;border:1px solid rgba(196,162,74,.1);pointer-events:none}
+.vault-center-ring-2{position:absolute;inset:20%;border-radius:50%;border:1px solid rgba(196,162,74,.06);pointer-events:none}
+.now-playing-bar{margin-top:clamp(24px,5vw,36px);text-align:center;position:relative;z-index:10;min-height:60px}
+.now-playing-title{font-family:var(--font-fell);font-size:clamp(22px,6vw,34px);font-style:italic;color:var(--pearl);letter-spacing:.04em;line-height:1.2;transition:opacity .5s,transform .6s cubic-bezier(.16,1,.3,1)}
+.now-playing-title.fade-out{opacity:0;transform:translateY(8px)}
+.now-playing-meta{margin-top:8px;font-family:var(--font-sans);font-size:8px;letter-spacing:.45em;text-transform:uppercase;color:rgba(196,162,74,.4)}
+.now-playing-duration{display:inline-block;margin-left:16px;color:rgba(154,149,142,.4)}
+.waveform-wrap{width:min(480px,92vw);margin:clamp(28px,6vw,44px) auto 0;position:relative;z-index:10;height:52px;display:flex;align-items:center;gap:2px}
+.waveform-bar{flex:1;border-radius:2px;background:rgba(196,162,74,.18);transition:background .4s,height .12s ease;min-height:3px}
+.waveform-bar.active{background:linear-gradient(to top,#7a6228,#d4b86a)}
+.progress-wrap{width:min(480px,92vw);margin:clamp(16px,3vw,22px) auto 0;position:relative;z-index:10}
+.progress-rail{width:100%;height:1px;background:rgba(196,162,74,.12);position:relative;cursor:pointer;padding:10px 0;margin:-10px 0}
+.progress-rail::after{content:'';position:absolute;top:50%;left:0;width:100%;height:1px;background:rgba(196,162,74,.12);transform:translateY(-50%)}
+.progress-fill{position:absolute;top:50%;left:0;height:1px;background:linear-gradient(90deg,#7a6228,#c4a24a);transform:translateY(-50%);width:0%;transition:width .3s linear;pointer-events:none}
+.progress-fill::after{content:'';position:absolute;right:-4px;top:50%;transform:translateY(-50%);width:8px;height:8px;background:#d4b86a;border-radius:50%;box-shadow:0 0 8px rgba(196,162,74,.6);opacity:0;transition:opacity .3s}
+.progress-rail:hover .progress-fill::after{opacity:1}
+.progress-times{display:flex;justify-content:space-between;margin-top:10px;font-family:var(--font-sans);font-size:7.5px;letter-spacing:.3em;color:rgba(154,149,142,.3)}
+.controls-wrap{width:min(480px,92vw);margin:clamp(28px,6vw,40px) auto 0;display:flex;align-items:center;justify-content:center;gap:clamp(20px,6vw,36px);position:relative;z-index:10}
+.ctrl-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(196,162,74,.45);transition:color .3s,transform .4s cubic-bezier(.16,1,.3,1);padding:8px;border-radius:50%}
+.ctrl-btn:hover{color:#d4b86a;transform:scale(1.08)}
+.ctrl-btn svg{display:block}
+.ctrl-btn--play{width:clamp(54px,14vw,68px)!important;height:clamp(54px,14vw,68px)!important;border:1px solid rgba(196,162,74,.3)!important;border-radius:50%!important;background:radial-gradient(circle at 35% 35%,rgba(196,162,74,.12),transparent)!important;color:#d4b86a!important;transition:border-color .3s,box-shadow .3s,transform .4s cubic-bezier(.16,1,.3,1)!important}
+.ctrl-btn--play:hover{border-color:rgba(196,162,74,.7)!important;box-shadow:0 0 24px rgba(196,162,74,.2)!important;transform:scale(1.06)!important}
+.ctrl-btn--play.playing{border-color:rgba(196,162,74,.55)!important;box-shadow:0 0 32px rgba(196,162,74,.18),0 0 0 1px rgba(196,162,74,.12)!important}
+.ctrl-btn--shuffle.active{color:#c4a24a}
+.shrine-divider{width:min(480px,92vw);margin:clamp(60px,12vw,100px) auto 0;height:1px;background:linear-gradient(90deg,transparent,rgba(196,162,74,.2),transparent);position:relative;z-index:10}
+.tracklist-wrap{width:min(520px,92vw);margin:0 auto;position:relative;z-index:10;padding-top:clamp(40px,8vw,64px)}
+.tracklist-heading{text-align:center;font-family:var(--font-sans);font-size:8px;letter-spacing:.55em;text-transform:uppercase;color:rgba(196,162,74,.3);margin-bottom:clamp(28px,6vw,44px)}
+.track-list{list-style:none;border-top:1px solid rgba(255,255,255,.04)}
+.track-item{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:14px;padding:clamp(14px,3.5vw,20px) 0;border-bottom:1px solid rgba(255,255,255,.035);cursor:pointer;transition:background .4s;position:relative;overflow:hidden}
+.track-item::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(196,162,74,.06),transparent);opacity:0;transition:opacity .4s}
+.track-item:hover::before{opacity:1}
+.track-num{font-family:var(--font-sans);font-size:8px;letter-spacing:.3em;color:rgba(196,162,74,.28);text-align:right;transition:opacity .3s}
+.track-item.active .track-num{opacity:0}
+.track-playing-indicator{position:absolute;left:0;top:50%;transform:translateY(-50%);width:32px;display:flex;align-items:center;justify-content:flex-end;gap:2px;opacity:0;transition:opacity .3s}
+.track-item.active .track-playing-indicator{opacity:1}
+.bar-ani{width:2px;border-radius:1px;background:#c4a24a;height:6px}
+.bar-ani:nth-child(1){animation:barDance .9s ease-in-out infinite}
+.bar-ani:nth-child(2){animation:barDance .9s ease-in-out .2s infinite}
+.bar-ani:nth-child(3){animation:barDance .9s ease-in-out .4s infinite}
+@keyframes barDance{0%,100%{height:6px}50%{height:14px}}
+.track-item.paused .bar-ani{animation-play-state:paused}
+.track-name{font-family:var(--font-fell);font-size:clamp(15px,4vw,18px);font-style:italic;color:rgba(212,207,198,.6);letter-spacing:.02em;line-height:1.3;transition:color .4s}
+.track-feat-small{display:block;font-family:var(--font-sans);font-size:7.5px;letter-spacing:.28em;text-transform:uppercase;color:rgba(154,149,142,.4);margin-top:3px;font-style:normal}
+.track-item.active .track-name{color:#d4b86a;font-style:normal}
+.track-item:hover .track-name{color:rgba(212,207,198,.85)}
+.track-dur{font-family:var(--font-sans);font-size:7.5px;letter-spacing:.25em;color:rgba(154,149,142,.3);transition:color .4s}
+.track-item.active .track-dur{color:rgba(196,162,74,.5)}
+.track-item:hover .track-dur{color:rgba(154,149,142,.5)}
+.particle-field{position:absolute;inset:0;pointer-events:none;z-index:5;overflow:hidden}
+.particle{position:absolute;border-radius:50%;background:#c4a24a;opacity:0;animation:particleDrift linear infinite}
+@keyframes particleDrift{0%{opacity:0;transform:translateY(0) scale(0)}10%{opacity:.6;transform:translateY(-10px) scale(1)}90%{opacity:.2}100%{opacity:0;transform:translateY(-120px) scale(.3)}}
+.shrine-reveal{opacity:0;transform:translateY(30px);transition:opacity 1.6s cubic-bezier(.16,1,.3,1),transform 1.8s cubic-bezier(.16,1,.3,1)}
+.shrine-reveal.on{opacity:1;transform:translateY(0)}
+@media(max-width:480px){.controls-wrap{gap:14px}.vault-spoke{display:none}}
+@media(prefers-reduced-motion:reduce){.waveform-bar,.bar-ani,.particle,#vinyl-canvas{animation:none!important;transition:none!important}}
+</style>
+
+
+<section id="vault-shrine" aria-label="The Return — Album Player">
+
+  <div class="particle-field" aria-hidden="true"></div>
+
+  <p class="shrine-eyebrow shrine-reveal">
+    God is never late &nbsp;·&nbsp; Ọọmua bụ flower tóó na concrete &nbsp;·&nbsp; The wait was the work
+  </p>
+
+  <div class="vault-stage shrine-reveal">
+
+    <div class="vault-door" role="button" tabindex="0" aria-label="Open the vault">
+      <div class="vault-inner">
+        <canvas id="vinyl-canvas"></canvas>
+        <div class="vault-flash" aria-hidden="true"></div>
+        <div class="vault-prompt" role="button" aria-label="Unlock the vault">
+          <div class="vault-prompt-icon">
+            <svg viewBox="0 0 24 24"><path d="M17 11V7a5 5 0 0 0-10 0v4M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z"/></svg>
+          </div>
+          <span class="vault-prompt-text">Open the vault</span>
+        </div>
+      </div>
+      <div class="vault-center-ring"  aria-hidden="true"></div>
+      <div class="vault-center-ring-2" aria-hidden="true"></div>
+    </div>
+
+    <div class="now-playing-bar shrine-reveal">
+      <p class="now-playing-title">Akwa Ego</p>
+      <p class="now-playing-meta">
+        <span>01 of 13</span>
+        <span class="now-playing-duration">3:12</span>
+      </p>
+    </div>
+
+    <div class="waveform-wrap shrine-reveal" aria-hidden="true"></div>
+
+    <div class="progress-wrap shrine-reveal">
+      <div class="progress-rail">
+        <div class="progress-fill"></div>
+      </div>
+      <div class="progress-times">
+        <span class="time-current">0:00</span>
+        <span class="time-total">3:12</span>
+      </div>
+    </div>
+
+    <div class="controls-wrap shrine-reveal">
+      <button class="ctrl-btn ctrl-btn--shuffle" id="btn-shuffle" aria-label="Shuffle">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+      </button>
+      <button class="ctrl-btn" id="btn-prev" aria-label="Previous track">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>
+      </button>
+      <button class="ctrl-btn ctrl-btn--play" id="btn-play" aria-label="Play">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg>
+      </button>
+      <button class="ctrl-btn" id="btn-next" aria-label="Next track">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+      </button>
+      <button class="ctrl-btn" id="btn-vol" aria-label="Volume">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+      </button>
+    </div>
+
+  </div>
+
+  <div class="shrine-divider shrine-reveal" aria-hidden="true"></div>
+
+  <div class="tracklist-wrap shrine-reveal">
+    <p class="tracklist-heading">The Return · Full Tracklist</p>
+    <ul class="track-list" id="track-list" role="list" aria-label="Album tracklist"></ul>
+
+    <div style="margin-top:clamp(40px,8vw,64px);text-align:center;display:flex;flex-direction:column;align-items:center;gap:24px;">
+      <a href="#" class="btn-listen" style="display:inline-block;padding:18px clamp(40px,10vw,72px);background:linear-gradient(135deg,#7a6228,#c4a24a);color:#090909;font-family:'Tenor Sans',sans-serif;font-size:9px;letter-spacing:.5em;text-transform:uppercase;text-decoration:none;transition:opacity .4s,transform .5s cubic-bezier(.16,1,.3,1);" onmouseover="this.style.opacity='.8';this.style.transform='translateY(-3px)'" onmouseout="this.style.opacity='1';this.style.transform='translateY(0)'">Listen Now</a>
+      <div style="display:flex;align-items:center;justify-content:center;gap:clamp(16px,5vw,28px);flex-wrap:wrap;">
+        <a href="#" style="font-family:'Tenor Sans',sans-serif;font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:rgba(154,149,142,.45);text-decoration:none;" onmouseover="this.style.color='rgba(196,162,74,.7)'" onmouseout="this.style.color='rgba(154,149,142,.45)'">Spotify</a>
+        <a href="#" style="font-family:'Tenor Sans',sans-serif;font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:rgba(154,149,142,.45);text-decoration:none;" onmouseover="this.style.color='rgba(196,162,74,.7)'" onmouseout="this.style.color='rgba(154,149,142,.45)'">Apple Music</a>
+        <a href="#" style="font-family:'Tenor Sans',sans-serif;font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:rgba(154,149,142,.45);text-decoration:none;" onmouseover="this.style.color='rgba(196,162,74,.7)'" onmouseout="this.style.color='rgba(154,149,142,.45)'">Audiomack</a>
+        <a href="#" style="font-family:'Tenor Sans',sans-serif;font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:rgba(154,149,142,.45);text-decoration:none;" onmouseover="this.style.color='rgba(196,162,74,.7)'" onmouseout="this.style.color='rgba(154,149,142,.45)'">YouTube Music</a>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- Add this once before </body> if not already present: -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> -->
+
+<script>
+(function(){
+'use strict';
+
+const tracks=[
+  {title:"Akwa Ego",feat:null,audio:null,duration:"3:12"},
+  {title:"Obara",feat:null,audio:null,duration:"3:41"},
+  {title:"Tene",feat:null,audio:null,duration:"2:58"},
+  {title:"Push 2 Start",feat:"feat. Chike",audio:null,duration:"3:55"},
+  {title:"Oku",feat:"feat. Wizard Chan & Odumodublavk",audio:null,duration:"4:08"},
+  {title:"Nta na Imo",feat:null,audio:null,duration:"3:27"},
+  {title:"Anointing",feat:null,audio:null,duration:"3:34"},
+  {title:"Born Sinner",feat:"feat. PsycoYP",audio:null,duration:"3:49"},
+  {title:"ỌGWỤ EGO",feat:null,audio:null,duration:"3:16"},
+  {title:"MGBE OLE",feat:null,audio:null,duration:"3:52"},
+  {title:"Jump & Pass",feat:"feat. Ajebo Hustlers",audio:null,duration:"4:01"},
+  {title:"Godsent",feat:null,audio:null,duration:"3:38"},
+  {title:"My Story",feat:null,audio:null,duration:"4:22"},
+];
+
+let state={currentIndex:0,isPlaying:false,isShuffled:false,vaultOpened:false,progress:0,audioCtx:null,analyser:null,audioElement:null,sourceNode:null,waveInterval:null,animId:null};
+let threeScene,threeCamera,threeRenderer,vinylMesh;
+let vinylRotSpd=0,targetRotSpd=0;
+
+const $=id=>document.getElementById(id);
+const q=s=>document.querySelector(s);
+const qa=s=>document.querySelectorAll(s);
+
+/* ── THREE.JS VINYL ── */
+function initThree(){
+  if(typeof THREE==='undefined'){console.warn('Three.js not loaded');return;}
+  const canvas=$('vinyl-canvas');
+  const container=canvas.parentElement;
+  const size=container.offsetWidth;
+  threeRenderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  threeRenderer.setSize(size,size);
+  threeScene=new THREE.Scene();
+  threeCamera=new THREE.PerspectiveCamera(38,1,0.1,100);
+  threeCamera.position.set(0,0.3,3.2);
+  threeCamera.lookAt(0,0,0);
+  threeScene.add(new THREE.AmbientLight(0x1a1408,2.5));
+  const kl=new THREE.DirectionalLight(0xd4b86a,3.5);
+  kl.position.set(2,3,2);threeScene.add(kl);
+  const rl=new THREE.DirectionalLight(0x4a3820,1.2);
+  rl.position.set(-2,-1,1);threeScene.add(rl);
+  const fl=new THREE.PointLight(0xc4a24a,0.8,8);
+  fl.position.set(0,-1.5,1);threeScene.add(fl);
+  buildVinyl();
+  buildShadow();
+  threeLoop();
+  canvas.classList.add('visible');
+  window.addEventListener('resize',()=>{
+    const s=container.offsetWidth;
+    threeRenderer.setSize(s,s);
+  });
+}
+
+function buildVinyl(){
+  const g=new THREE.Group();
+  threeScene.add(g);vinylMesh=g;
+  const disc=new THREE.Mesh(
+    new THREE.CylinderGeometry(1.0,1.0,0.04,128),
+    new THREE.MeshStandardMaterial({color:0x0d0c0a,roughness:0.18,metalness:0.7})
+  );
+  disc.rotation.x=Math.PI/2;g.add(disc);
+  for(let i=0;i<28;i++){
+    const r=0.22+i*0.028;
+    const gv=new THREE.Mesh(
+      new THREE.TorusGeometry(r,0.003,6,128),
+      new THREE.MeshStandardMaterial({color:0xc4a24a,roughness:0.6,metalness:0.9,transparent:true,opacity:0.08+(i%3===0?.12:0)})
+    );
+    gv.rotation.x=Math.PI/2;gv.position.y=0.021;g.add(gv);
+  }
+  const band=new THREE.Mesh(
+    new THREE.TorusGeometry(0.96,0.025,12,128),
+    new THREE.MeshStandardMaterial({color:0xc4a24a,roughness:0.1,metalness:1,emissive:0x7a6228,emissiveIntensity:0.3})
+  );
+  band.rotation.x=Math.PI/2;band.position.y=0.022;g.add(band);
+  // Label canvas
+  const lc=document.createElement('canvas');lc.width=512;lc.height=512;
+  const lx=lc.getContext('2d');
+  const gr=lx.createRadialGradient(256,256,20,256,256,256);
+  gr.addColorStop(0,'#2a1f08');gr.addColorStop(0.5,'#1a1408');gr.addColorStop(1,'#0d0a04');
+  lx.fillStyle=gr;lx.beginPath();lx.arc(256,256,256,0,Math.PI*2);lx.fill();
+  lx.strokeStyle='rgba(196,162,74,0.6)';lx.lineWidth=8;lx.beginPath();lx.arc(256,256,240,0,Math.PI*2);lx.stroke();
+  lx.fillStyle='rgba(196,162,74,0.85)';lx.font='bold 44px serif';lx.textAlign='center';lx.textBaseline='middle';
+  lx.fillText('AGUERO',256,215);lx.font='28px serif';lx.fillStyle='rgba(196,162,74,0.5)';lx.fillText('BANKS',256,262);
+  lx.font='18px sans-serif';lx.fillStyle='rgba(196,162,74,0.3)';lx.fillText('THE RETURN',256,300);
+  lx.fillStyle='#050504';lx.beginPath();lx.arc(256,256,18,0,Math.PI*2);lx.fill();
+  const label=new THREE.Mesh(
+    new THREE.CylinderGeometry(0.22,0.22,0.044,64),
+    new THREE.MeshStandardMaterial({map:new THREE.CanvasTexture(lc),roughness:0.3,metalness:0.4})
+  );
+  label.rotation.x=Math.PI/2;g.add(label);
+  const hole=new THREE.Mesh(
+    new THREE.CylinderGeometry(0.025,0.025,0.06,32),
+    new THREE.MeshStandardMaterial({color:0x050504,roughness:1,metalness:0})
+  );
+  hole.rotation.x=Math.PI/2;g.add(hole);
+  g.rotation.x=0.18;g.position.y=-0.05;
+}
+
+function buildShadow(){
+  const s=new THREE.Mesh(
+    new THREE.CircleGeometry(1.1,64),
+    new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.5,depthWrite:false})
+  );
+  s.rotation.x=-Math.PI/2;s.position.set(0,-0.65,0);threeScene.add(s);
+}
+
+function threeLoop(){
+  state.animId=requestAnimationFrame(threeLoop);
+  vinylRotSpd+=(targetRotSpd-vinylRotSpd)*0.04;
+  if(vinylMesh){
+    vinylMesh.rotation.z+=vinylRotSpd;
+    vinylMesh.position.y=-0.05+Math.sin(Date.now()*0.0012)*0.04;
+  }
+  if(threeRenderer)threeRenderer.render(threeScene,threeCamera);
+}
+
+/* ── VAULT ── */
+function openVault(){
+  if(state.vaultOpened)return;
+  state.vaultOpened=true;
+  q('.vault-door').classList.add('unlocking');
+  setTimeout(()=>{
+    const fl=q('.vault-flash');fl.classList.add('on');
+    setTimeout(()=>fl.classList.remove('on'),900);
+  },1800);
+  setTimeout(()=>q('.vault-prompt').classList.add('hidden'),400);
+  setTimeout(()=>{
+    initThree();
+    updateTrackUI(0);
+  },600);
+}
+
+/* ── SIMULATED WAVEFORM ── */
+function startWave(){
+  const bars=qa('.waveform-bar');
+  stopWave();
+  state.waveInterval=setInterval(()=>{
+    if(!state.isPlaying)return;
+    bars.forEach((b,i)=>{
+      const t=Date.now()*0.003;
+      const w=Math.abs(Math.sin(t+i*0.4)*Math.sin(t*0.7+i*0.2));
+      b.style.height=(6+w*42)+'px';
+      b.classList.add('active');
+    });
+    if(!tracks[state.currentIndex].audio){
+      state.progress=(state.progress+0.03)%100;
+      q('.progress-fill').style.width=state.progress+'%';
+    }
+  },80);
+}
+
+function stopWave(){
+  clearInterval(state.waveInterval);
+  qa('.waveform-bar').forEach(b=>{b.style.height='';b.classList.remove('active');});
+  if(!tracks[state.currentIndex].audio){state.progress=0;q('.progress-fill').style.width='0%';}
+}
+
+/* ── PLAY/PAUSE ── */
+function play(){
+  state.isPlaying=true;
+  targetRotSpd=0.004;
+  updatePlayIcon(true);
+  updateList(state.currentIndex);
+  if(state.audioElement&&tracks[state.currentIndex].audio){
+    if(state.audioCtx)state.audioCtx.resume();
+    state.audioElement.play();
+  } else {startWave();}
+}
+
+function pause(){
+  state.isPlaying=false;
+  targetRotSpd=0;
+  updatePlayIcon(false);
+  updateList(state.currentIndex);
+  if(state.audioElement)state.audioElement.pause();
+  stopWave();
+}
+
+function togglePlay(){
+  if(!state.vaultOpened){openVault();return;}
+  state.isPlaying?pause():play();
+}
+
+function next(){
+  let n=state.isShuffled?Math.floor(Math.random()*tracks.length):(state.currentIndex+1)%tracks.length;
+  loadTrack(n);if(state.isPlaying)play();
+}
+
+function prev(){
+  let p=(state.currentIndex-1+tracks.length)%tracks.length;
+  loadTrack(p);if(state.isPlaying)play();
+}
+
+function loadTrack(i){
+  state.currentIndex=i;
+  updateTrackUI(i);
+  updateList(i);
+  if(state.audioElement){state.audioElement.pause();state.audioElement.src='';}
+  if(tracks[i].audio){
+    if(!state.audioCtx){state.audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
+    if(!state.audioElement){
+      state.audioElement=new Audio();state.audioElement.crossOrigin='anonymous';
+      if(!state.sourceNode){
+        state.sourceNode=state.audioCtx.createMediaElementSource(state.audioElement);
+        state.sourceNode.connect(state.audioCtx.destination);
+      }
+      state.audioElement.addEventListener('ended',next);
+    }
+    state.audioElement.src=tracks[i].audio;
+    if(state.isPlaying){state.audioCtx.resume().then(()=>state.audioElement.play());}
+  }
+}
+
+/* ── UI UPDATES ── */
+function updateTrackUI(i){
+  const t=tracks[i];
+  const el=q('.now-playing-title');
+  el.style.opacity='0';el.style.transform='translateY(8px)';
+  setTimeout(()=>{
+    el.textContent=t.title;
+    el.style.opacity='1';el.style.transform='translateY(0)';
+  },260);
+  q('.now-playing-meta').innerHTML=`<span>${String(i+1).padStart(2,'0')} of ${tracks.length}</span><span class="now-playing-duration">${t.duration}</span>`;
+  q('.time-total').textContent=t.duration;
+  q('.progress-fill').style.width='0%';
+}
+
+function updateList(active){
+  qa('.track-item').forEach((el,i)=>{
+    el.classList.toggle('active',i===active);
+    el.classList.toggle('paused',i===active&&!state.isPlaying);
+  });
+}
+
+function updatePlayIcon(playing){
+  const btn=$('btn-play');
+  btn.classList.toggle('playing',playing);
+  btn.innerHTML=playing
+    ?`<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`
+    :`<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg>`;
+}
+
+/* ── BUILD DOM ── */
+function buildList(){
+  const ul=$('track-list');
+  tracks.forEach((t,i)=>{
+    const li=document.createElement('li');
+    li.className='track-item';
+    li.setAttribute('role','button');li.setAttribute('tabindex','0');
+    li.dataset.index=i;
+    li.innerHTML=`
+      <span class="track-num">${String(i+1).padStart(2,'0')}</span>
+      <div class="track-playing-indicator" aria-hidden="true">
+        <span class="bar-ani"></span><span class="bar-ani"></span><span class="bar-ani"></span>
+      </div>
+      <span class="track-name">${t.title}${t.feat?`<span class="track-feat-small">${t.feat}</span>`:''}</span>
+      <span class="track-dur">${t.duration}</span>`;
+    li.addEventListener('click',()=>{
+      if(!state.vaultOpened)openVault();
+      state.isPlaying=true;loadTrack(i);play();
+    });
+    li.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();li.click();}});
+    ul.appendChild(li);
+  });
+}
+
+function buildWaveform(){
+  const w=q('.waveform-wrap');
+  for(let i=0;i<48;i++){
+    const b=document.createElement('div');b.className='waveform-bar';
+    b.style.height=(4+Math.abs(Math.sin(i*0.35+0.4))*28)+'px';
+    w.appendChild(b);
+  }
+}
+
+function buildSpokes(){
+  const door=q('.vault-door');
+  for(let i=0;i<12;i++){
+    const s=document.createElement('div');s.className='vault-spoke';
+    s.style.transform=`translateX(-50%) translateY(-100%) rotate(${i*30}deg)`;
+    door.appendChild(s);
+  }
+  [{top:'6%',left:'50%',transform:'translate(-50%,0)'},{top:'50%',left:'94%',transform:'translate(0,-50%)'},{top:'94%',left:'50%',transform:'translate(-50%,-100%)'},{top:'50%',left:'6%',transform:'translate(-100%,-50%)'}]
+  .forEach(pos=>{
+    const bolt=document.createElement('div');bolt.className='vault-bolt';
+    Object.assign(bolt.style,{width:'14%',height:'14%',position:'absolute',...pos});
+    door.appendChild(bolt);
+  });
+}
+
+function spawnParticles(){
+  const field=q('.particle-field');
+  setInterval(()=>{
+    if(!state.isPlaying)return;
+    const p=document.createElement('div');p.className='particle';
+    const sz=Math.random()*3+1;
+    const dur=3+Math.random()*4;
+    p.style.cssText=`width:${sz}px;height:${sz}px;left:${30+Math.random()*40}%;bottom:20%;animation-duration:${dur}s;animation-delay:${Math.random()*2}s;opacity:0;`;
+    field.appendChild(p);
+    setTimeout(()=>p.remove(),(dur+2)*1000);
+  },400);
+}
+
+function initScrollReveal(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');obs.unobserve(e.target);}});
+  },{threshold:0.06});
+  qa('.shrine-reveal').forEach(el=>obs.observe(el));
+}
+
+/* ── PROGRESS SCRUB ── */
+function scrub(e){
+  const rail=q('.progress-rail');
+  const rect=rail.getBoundingClientRect();
+  const x=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
+  const pct=Math.max(0,Math.min(100,(x/rect.width)*100));
+  q('.progress-fill').style.width=pct+'%';
+  if(state.audioElement&&state.audioElement.duration)
+    state.audioElement.currentTime=(pct/100)*state.audioElement.duration;
+}
+
+/* ── INIT ── */
+function init(){
+  buildList();buildWaveform();buildSpokes();spawnParticles();initScrollReveal();
+  $('btn-play').addEventListener('click',togglePlay);
+  $('btn-next').addEventListener('click',()=>{if(state.vaultOpened)next();});
+  $('btn-prev').addEventListener('click',()=>{if(state.vaultOpened)prev();});
+  $('btn-shuffle').addEventListener('click',()=>{
+    state.isShuffled=!state.isShuffled;
+    $('btn-shuffle').classList.toggle('active',state.isShuffled);
+  });
+  q('.vault-prompt').addEventListener('click',openVault);
+  q('.vault-inner').addEventListener('click',()=>{
+    if(!state.vaultOpened){openVault();return;}
+    togglePlay();
+  });
+  let scrubbing=false;
+  q('.progress-rail').addEventListener('mousedown',e=>{scrubbing=true;scrub(e);});
+  window.addEventListener('mousemove',e=>{if(scrubbing)scrub(e);});
+  window.addEventListener('mouseup',()=>{scrubbing=false;});
+  q('.progress-rail').addEventListener('touchstart',scrub,{passive:true});
+  q('.progress-rail').addEventListener('touchmove',scrub,{passive:true});
+}
+
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
+})();
+</script>

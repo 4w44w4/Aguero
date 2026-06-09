@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Aguero Banks — The Return · Vault Player</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400;1,600&family=IM+Fell+English:ital@0;1&family=Tenor+Sans&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body style="background:#050505; margin:0; padding:0;">
+
+<!-- ══════════════════════════════════════════════
+   VAULT SHRINE — Insert below hero section
+   This entire block drops in between the hero
+   section and the monument section.
+══════════════════════════════════════════════ -->
+
+<section id="vault-shrine" aria-label="The Return — Album Player">
+
+  <!-- Particle field -->
+  <div class="particle-field" aria-hidden="true"></div>
+
+  <!-- Eyebrow label -->
+  <p class="shrine-eyebrow shrine-reveal">
+    God is never late &nbsp;·&nbsp; Ọọmua bụ flower tóó na concrete &nbsp;·&nbsp; The wait was the work
+  </p>
+
+  <!-- ── VAULT DOOR ────────────────────────────── -->
+  <div class="vault-stage shrine-reveal">
+
+    <div class="vault-door" role="button" tabindex="0" aria-label="Open the vault">
+
+      <!-- Inner void / canvas container -->
+      <div class="vault-inner">
+        <canvas id="vinyl-canvas"></canvas>
+
+        <!-- Flash effect -->
+        <div class="vault-flash" aria-hidden="true"></div>
+
+        <!-- Prompt shown before unlock -->
+        <div class="vault-prompt" role="button" aria-label="Unlock the vault">
+          <div class="vault-prompt-icon">
+            <!-- Lock icon -->
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M17 11V7a5 5 0 0 0-10 0v4M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z"/>
+            </svg>
+          </div>
+          <span class="vault-prompt-text">Open the vault</span>
+        </div>
+
+      </div><!-- /vault-inner -->
+
+      <!-- Decorative rings -->
+      <div class="vault-center-ring"  aria-hidden="true"></div>
+      <div class="vault-center-ring-2" aria-hidden="true"></div>
+
+    </div><!-- /vault-door -->
+
+    <!-- ── NOW PLAYING ──────────────────────────── -->
+    <div class="now-playing-bar shrine-reveal">
+      <p class="now-playing-title">Akwa Ego</p>
+      <p class="now-playing-meta">
+        <span>01 of 13</span>
+        <span class="now-playing-duration">3:12</span>
+      </p>
+    </div>
+
+    <!-- ── WAVEFORM ─────────────────────────────── -->
+    <div class="waveform-wrap shrine-reveal" aria-hidden="true">
+      <!-- bars injected by JS -->
+    </div>
+
+    <!-- ── PROGRESS ─────────────────────────────── -->
+    <div class="progress-wrap shrine-reveal" role="group" aria-label="Playback progress">
+      <div class="progress-rail" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Seek">
+        <div class="progress-fill"></div>
+      </div>
+      <div class="progress-times">
+        <span class="time-current">0:00</span>
+        <span class="time-total">3:12</span>
+      </div>
+    </div>
+
+    <!-- ── CONTROLS ──────────────────────────────── -->
+    <div class="controls-wrap shrine-reveal" role="group" aria-label="Playback controls">
+
+      <!-- Shuffle -->
+      <button class="ctrl-btn ctrl-btn--shuffle" id="btn-shuffle" aria-label="Shuffle" aria-pressed="false">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/>
+          <polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/>
+        </svg>
+      </button>
+
+      <!-- Previous -->
+      <button class="ctrl-btn" id="btn-prev" aria-label="Previous track">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/>
+        </svg>
+      </button>
+
+      <!-- Play / Pause -->
+      <button class="ctrl-btn ctrl-btn--play" id="btn-play" aria-label="Play">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg>
+      </button>
+
+      <!-- Next -->
+      <button class="ctrl-btn" id="btn-next" aria-label="Next track">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/>
+        </svg>
+      </button>
+
+      <!-- Volume / mute placeholder -->
+      <button class="ctrl-btn" id="btn-vol" aria-label="Volume" onclick="this.classList.toggle('active')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        </svg>
+      </button>
+
+    </div><!-- /controls -->
+
+  </div><!-- /vault-stage -->
+
+
+  <!-- ── GOLD DIVIDER ──────────────────────────── -->
+  <div class="shrine-divider shrine-reveal" aria-hidden="true"></div>
+
+
+  <!-- ── TRACKLIST ─────────────────────────────── -->
+  <div class="tracklist-wrap shrine-reveal">
+
+    <p class="tracklist-heading">The Return · Full Tracklist</p>
+
+    <ul class="track-list" id="track-list" role="list" aria-label="Album tracklist">
+      <!-- injected by JS -->
+    </ul>
+
+    <!-- Listen platforms -->
+    <div style="
+      margin-top: clamp(40px, 8vw, 64px);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    ">
+      <a href="#" style="
+        display: inline-block;
+        padding: 18px clamp(40px, 10vw, 72px);
+        background: linear-gradient(135deg, #7a6228, #c4a24a);
+        color: #090909;
+        font-family: 'Tenor Sans', sans-serif;
+        font-size: 9px;
+        letter-spacing: .5em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: opacity .4s, transform .5s cubic-bezier(0.16,1,0.3,1);
+        position: relative; z-index: 10;
+      "
+      onmouseover="this.style.opacity='.8';this.style.transform='translateY(-3px)'"
+      onmouseout="this.style.opacity='1';this.style.transform='translateY(0)'">
+        Listen Now
+      </a>
+
+      <div style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(16px, 5vw, 28px);
+        flex-wrap: wrap;
+      ">
+        <a href="#" style="font-family:'Tenor Sans',sans-serif;font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:rgba(154,149,142,.45);text-decoration:none;transition:color .4s;" onmouseover="this.style.color='rgba(196,162,74,.7)'" onmouseout="this.style.color='rgba(154,149,142,.45)'">Spotify</a>
+        <a href="#" style="font-family:'Tenor Sans',sans-serif;font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:rgba(154,149,142,.45);text-decoration:none;transition:color .4s;" onmouseover="this.style.color='rgba(196,162,74,.7)'" onmouseout="this.style.color='rgba(154,149,142,.45)'">Apple Music</a>
+        <a href="#" style="font-family:'Tenor Sans',sans-serif;font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:rgba(154,149,142,.45);text-decoration:none;transition:color .4s;" onmouseover="this.style.color='rgba(196,162,74,.7)'" onmouseout="this.style.color='rgba(154,149,142,.45)'">Audiomack</a>
+        <a href="#" style="font-family:'Tenor Sans',sans-serif;font-size:8px;letter-spacing:.4em;text-transform:uppercase;color:rgba(154,149,142,.45);text-decoration:none;transition:color .4s;" onmouseover="this.style.color='rgba(196,162,74,.7)'" onmouseout="this.style.color='rgba(154,149,142,.45)'">YouTube Music</a>
+      </div>
+
+    </div>
+
+  </div><!-- /tracklist-wrap -->
+
+</section>
+
+
+<!-- Three.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
